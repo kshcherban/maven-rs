@@ -1,3 +1,7 @@
+// ABOUTME: Exercises editing of a real POM fixture.
+// ABOUTME: Checks dependency and build access through the optional editor API.
+#![cfg(feature = "editor")]
+
 use std::path::PathBuf;
 
 use maven_rs::pom::{Dependency, editor::PomEditor};

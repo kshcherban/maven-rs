@@ -1,3 +1,7 @@
+// ABOUTME: Exercises POM editing with generated dependencies and repositories.
+// ABOUTME: Checks that serialized XML retains the edited project metadata.
+#![cfg(feature = "editor")]
+
 use maven_rs::{
     pom::{Dependency, Repository, editor::PomEditor},
     types::Property,

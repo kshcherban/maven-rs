@@ -1,6 +1,9 @@
+// ABOUTME: Defines Maven mirror settings for Serde.
+// ABOUTME: Provides optional XML conversion and update implementations.
 use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
 
+#[cfg(feature = "editor")]
 use crate::editor::{
     ChildOfListElement, ElementConverter, HasElementName, UpdatableElement,
     utils::{
@@ -22,12 +25,14 @@ pub struct Mirror {
     pub url: String,
     pub mirror_of: String,
 }
+#[cfg(feature = "editor")]
 impl HasElementName for Mirror {
     fn element_name() -> &'static str {
         "mirror"
     }
 }
 
+#[cfg(feature = "editor")]
 impl ElementConverter for Mirror {
     from_element_using_builder!(
         MirrorBuilder,
@@ -51,12 +56,14 @@ impl ElementConverter for Mirror {
         Ok(children)
     }
 }
+#[cfg(feature = "editor")]
 impl ChildOfListElement for Mirror {
     fn parent_element_name() -> &'static str {
         "mirrors"
     }
 }
 
+#[cfg(feature = "editor")]
 impl UpdatableElement for Mirror {
     fn update_element(
         &self,

@@ -1,13 +1,39 @@
+// ABOUTME: Defines Maven properties and shared value parsing errors.
+// ABOUTME: Adds XML value conversions when the editor feature is enabled.
 use std::{fmt::Display, str::FromStr};
 
 use prop::ParseState;
 
-use crate::{
-    editor::{InvalidValueError, PomValue},
-    utils::{parse::ParseErrorExt, serde_utils::serde_via_string_types},
-};
+use crate::utils::{parse::ParseErrorExt, serde_utils::serde_via_string_types};
+
+#[cfg(feature = "editor")]
+use crate::editor::PomValue;
 
 pub(crate) mod prop;
+
+/// An invalid or incorrectly formatted Maven value.
+#[derive(Debug, thiserror::Error)]
+pub enum InvalidValueError {
+    InvalidValue {
+        expected: &'static str,
+        found: String,
+    },
+    InvalidFormattedValue {
+        error: String,
+    },
+}
+impl Display for InvalidValueError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            InvalidValueError::InvalidValue { expected, found } => {
+                write!(f, "Expected {} found {}", expected, found)
+            }
+            InvalidValueError::InvalidFormattedValue { error } => {
+                write!(f, "Invalid Value: {}", error)
+            }
+        }
+    }
+}
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Property {
@@ -110,6 +136,7 @@ impl Display for Property {
         }
     }
 }
+#[cfg(feature = "editor")]
 impl PomValue for Property {
     fn from_str_for_editor(value: &str) -> Result<Self, crate::editor::InvalidValueError> {
         Self::from_str(value).map_err(|err| InvalidValueError::InvalidFormattedValue {

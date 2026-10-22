@@ -1,7 +1,11 @@
+// ABOUTME: Defines Maven distribution repository metadata.
+// ABOUTME: Provides optional XML conversion and editing wrappers.
 use derive_builder::Builder;
+#[cfg(feature = "editor")]
 use edit_xml::Element;
 use serde::{Deserialize, Serialize};
 
+#[cfg(feature = "editor")]
 use crate::editor::{
     ComparableElement, ElementConverter, HasElementName, PomValue, UpdatableElement,
     utils::{add_if_present, find_or_create_then_set_text_content, sync_element},
@@ -24,6 +28,7 @@ pub struct DistributionRepository {
     #[builder(setter(into, strip_option), default)]
     pub checksum_policy: Option<ChecksumPolicy>,
 }
+#[cfg(feature = "editor")]
 impl DistributionRepository {
     pub fn repository(self) -> DistributionRepositoryRepository {
         DistributionRepositoryRepository::new(self)
@@ -33,6 +38,7 @@ impl DistributionRepository {
     }
 }
 
+#[cfg(feature = "editor")]
 impl ComparableElement for DistributionRepository {
     fn is_same_item(&self, other: &Self) -> bool {
         if self.name.is_none() {
@@ -41,6 +47,7 @@ impl ComparableElement for DistributionRepository {
         self.name == other.name
     }
 }
+#[cfg(feature = "editor")]
 impl UpdatableElement for DistributionRepository {
     fn update_element(
         &self,
@@ -54,6 +61,7 @@ impl UpdatableElement for DistributionRepository {
         Ok(())
     }
 }
+#[cfg(feature = "editor")]
 impl ElementConverter for DistributionRepository {
     fn from_element(
         element: edit_xml::Element,
@@ -114,27 +122,33 @@ impl ElementConverter for DistributionRepository {
     }
 }
 
+#[cfg(feature = "editor")]
 pub struct DistributionRepositoryRepository(DistributionRepository);
+#[cfg(feature = "editor")]
 impl DistributionRepositoryRepository {
     pub fn new(repository: DistributionRepository) -> Self {
         Self(repository)
     }
 }
+#[cfg(feature = "editor")]
 impl From<DistributionRepository> for DistributionRepositoryRepository {
     fn from(repository: DistributionRepository) -> Self {
         Self(repository)
     }
 }
+#[cfg(feature = "editor")]
 impl HasElementName for DistributionRepositoryRepository {
     fn element_name() -> &'static str {
         "repository"
     }
 }
+#[cfg(feature = "editor")]
 impl ComparableElement for DistributionRepositoryRepository {
     fn is_same_item(&self, other: &Self) -> bool {
         self.0.is_same_item(&other.0)
     }
 }
+#[cfg(feature = "editor")]
 impl UpdatableElement for DistributionRepositoryRepository {
     fn update_element(
         &self,
@@ -144,6 +158,7 @@ impl UpdatableElement for DistributionRepositoryRepository {
         self.0.update_element(element, document)
     }
 }
+#[cfg(feature = "editor")]
 impl ElementConverter for DistributionRepositoryRepository {
     fn from_element(
         element: edit_xml::Element,
@@ -162,27 +177,33 @@ impl ElementConverter for DistributionRepositoryRepository {
     }
 }
 
+#[cfg(feature = "editor")]
 pub struct DistributionRepositorySnapshotRepository(DistributionRepository);
+#[cfg(feature = "editor")]
 impl DistributionRepositorySnapshotRepository {
     pub fn new(repository: DistributionRepository) -> Self {
         Self(repository)
     }
 }
+#[cfg(feature = "editor")]
 impl From<DistributionRepository> for DistributionRepositorySnapshotRepository {
     fn from(repository: DistributionRepository) -> Self {
         Self(repository)
     }
 }
+#[cfg(feature = "editor")]
 impl HasElementName for DistributionRepositorySnapshotRepository {
     fn element_name() -> &'static str {
         "snapshotRepository"
     }
 }
+#[cfg(feature = "editor")]
 impl ComparableElement for DistributionRepositorySnapshotRepository {
     fn is_same_item(&self, other: &Self) -> bool {
         self.0.is_same_item(&other.0)
     }
 }
+#[cfg(feature = "editor")]
 impl UpdatableElement for DistributionRepositorySnapshotRepository {
     fn update_element(
         &self,
@@ -192,6 +213,7 @@ impl UpdatableElement for DistributionRepositorySnapshotRepository {
         self.0.update_element(element, document)
     }
 }
+#[cfg(feature = "editor")]
 impl ElementConverter for DistributionRepositorySnapshotRepository {
     fn from_element(
         element: edit_xml::Element,

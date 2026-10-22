@@ -1,7 +1,10 @@
+// ABOUTME: Exposes Maven models, parsing helpers, and optional editing and resolution APIs.
+// ABOUTME: Keeps XML editing dependencies behind the editor feature.
 pub mod extension;
 #[cfg(feature = "resolver")]
 pub mod resolver;
 
+#[cfg(feature = "editor")]
 pub mod editor;
 pub mod meta;
 pub mod pom;

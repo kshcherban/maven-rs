@@ -1,21 +1,23 @@
+// ABOUTME: Defines Maven repositories and update and checksum policies.
+// ABOUTME: Provides shared policy parsing and optional XML editing support.
 use std::{fmt::Display, str::FromStr};
 
 use derive_builder::Builder;
+#[cfg(feature = "editor")]
 use edit_xml::Element;
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString};
 
-use crate::{
-    editor::{
-        ChildOfListElement, ComparableElement, ElementConverter, HasElementName, InvalidValueError,
-        PomValue, UpdatableElement,
-        utils::{
-            add_if_present, find_or_create_then_set_text_content, sync_element,
-            typed_from_element_using_builder,
-        },
+#[cfg(feature = "editor")]
+use crate::editor::{
+    ChildOfListElement, ComparableElement, ElementConverter, HasElementName, PomValue,
+    UpdatableElement,
+    utils::{
+        add_if_present, find_or_create_then_set_text_content, sync_element,
+        typed_from_element_using_builder,
     },
-    utils::serde_utils::serde_via_string_types,
 };
+use crate::{types::InvalidValueError, utils::serde_utils::serde_via_string_types};
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Repositories {
@@ -42,16 +44,19 @@ pub struct Repository {
     #[builder(setter(into, strip_option), default)]
     pub snapshots: Option<SubRepositoryRules>,
 }
+#[cfg(feature = "editor")]
 impl HasElementName for Repository {
     fn element_name() -> &'static str {
         "repository"
     }
 }
+#[cfg(feature = "editor")]
 impl ChildOfListElement for Repository {
     fn parent_element_name() -> &'static str {
         "repositories"
     }
 }
+#[cfg(feature = "editor")]
 impl ComparableElement for Repository {
     fn is_same_item(&self, other: &Self) -> bool {
         if self.name.is_none() {
@@ -60,6 +65,7 @@ impl ComparableElement for Repository {
         self.name == other.name
     }
 }
+#[cfg(feature = "editor")]
 impl UpdatableElement for Repository {
     fn update_element(
         &self,
@@ -76,6 +82,7 @@ impl UpdatableElement for Repository {
         Ok(())
     }
 }
+#[cfg(feature = "editor")]
 impl ElementConverter for Repository {
     fn from_element(
         element: edit_xml::Element,
@@ -169,6 +176,7 @@ pub struct SubRepositoryRules {
     #[builder(setter(into, strip_option), default)]
     pub checksum_policy: Option<ChecksumPolicy>,
 }
+#[cfg(feature = "editor")]
 impl ElementConverter for SubRepositoryRules {
     typed_from_element_using_builder!(
         SubRepositoryRulesBuilder,
@@ -210,6 +218,7 @@ impl From<ChecksumPolicy> for String {
 }
 
 serde_via_string_types!(ChecksumPolicy);
+#[cfg(feature = "editor")]
 impl PomValue for ChecksumPolicy {
     fn from_str_for_editor(value: &str) -> Result<Self, InvalidValueError> {
         match value {
@@ -233,6 +242,7 @@ pub enum RepositoryLayout {
     Legacy,
 }
 serde_via_string_types!(RepositoryLayout);
+#[cfg(feature = "editor")]
 impl PomValue for RepositoryLayout {
     fn from_str_for_editor(value: &str) -> Result<Self, InvalidValueError> {
         match value {
@@ -306,6 +316,7 @@ impl Display for UpdatePolicy {
     }
 }
 
+#[cfg(feature = "editor")]
 impl PomValue for UpdatePolicy {
     fn from_str_for_editor(value: &str) -> Result<Self, InvalidValueError> {
         value.parse()
@@ -321,6 +332,7 @@ serde_via_string_types!(UpdatePolicy);
 mod tests {
     use std::str::FromStr;
 
+    #[cfg(feature = "editor")]
     use crate::editor::utils::test_utils;
 
     use super::*;
@@ -357,11 +369,14 @@ mod tests {
     }
 
     fn test_parse_methods(value: &str, expected: Repository) -> anyhow::Result<()> {
+        #[cfg(feature = "editor")]
         let dep_via_edit_xml = test_utils::create_xml_to_element::<Repository>(value)?;
         let dep_via_serde: Repository = quick_xml::de::from_str(value)?;
 
+        #[cfg(feature = "editor")]
         assert_eq!(dep_via_edit_xml, expected);
         assert_eq!(dep_via_serde, expected);
+        #[cfg(feature = "editor")]
         println!("{:#?}", dep_via_edit_xml);
 
         let dep_serialize_serde = quick_xml::se::to_string(&expected)?;
@@ -469,6 +484,7 @@ mod tests {
         )
     }
 
+    #[cfg(feature = "editor")]
     #[test]
     fn update_element_test() -> anyhow::Result<()> {
         let actual_xml = r#"<?xml version="1.0" encoding="UTF-8"?>

@@ -1,3 +1,5 @@
+# ABOUTME: Validates Maven parsing, resolution, and optional editing feature combinations.
+# ABOUTME: Builds and tests the feature matrix and runs Clippy with all features.
 name: CLI
 
 on:
@@ -14,12 +16,15 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        features: ["", "resolver", "editor", "editor,resolver"]
     steps:
       - uses: actions/checkout@v4
       - name: Build
-        run: cargo build --verbose
+        run: cargo build --verbose --no-default-features --features "${{ matrix.features }}"
       - name: Run tests
-        run: cargo test --verbose
+        run: cargo test --verbose --no-default-features --features "${{ matrix.features }}"
   clippy:
     runs-on: ubuntu-latest
     steps:

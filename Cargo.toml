@@ -12,7 +12,7 @@ license = "MIT OR Apache-2.0"
 ## Parsing Libraries
 quick-xml = { version = "0.38", features = ["serialize"] }
 winnow = { version = "0.7" }
-edit-xml = { git = "https://github.com/wyatt-herkamp/edit-xml.git", features = [
+edit-xml = { optional = true, git = "https://github.com/wyatt-herkamp/edit-xml.git", features = [
     "ahash",
     "soft-fail-unescape",
     "tracing",
@@ -36,6 +36,7 @@ base64 = { version = "0.22", optional = true }
 
 [features]
 default = []
+editor = ["dep:edit-xml"]
 resolver = ["reqwest", "url", "bytes", "base64"]
 ## This feature is mainly for debugging purposes
 bug-files = []
@@ -48,4 +49,4 @@ toml = { version = "0.9" }
 rand = { version = "0.9" }
 [[example]]
 name = "check_against_local_repo"
-required-features = ["local"]
+required-features = ["editor"]

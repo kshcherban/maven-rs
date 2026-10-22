@@ -1,14 +1,15 @@
+// ABOUTME: Defines Maven build and plugin models for Serde.
+// ABOUTME: Provides optional XML conversions for build plugins.
 use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    editor::{
-        ChildOfListElement, ComparableElement, ElementConverter, HasElementName, PomValue,
-        UpdatableElement, XMLEditorError,
-        utils::{add_if_present, create_basic_text_element, find_element_or_err, sync_element},
-    },
-    types::Property,
+#[cfg(feature = "editor")]
+use crate::editor::{
+    ChildOfListElement, ComparableElement, ElementConverter, HasElementName, PomValue,
+    UpdatableElement, XMLEditorError,
+    utils::{add_if_present, create_basic_text_element, find_element_or_err, sync_element},
 };
+use crate::types::Property;
 
 #[derive(Debug, Serialize, Deserialize, Clone, Default, Builder)]
 pub struct Build {
@@ -39,11 +40,13 @@ impl Plugin {
         self.group_id == other.group_id && self.artifact_id == other.artifact_id
     }
 }
+#[cfg(feature = "editor")]
 impl HasElementName for Plugin {
     fn element_name() -> &'static str {
         "plugin"
     }
 }
+#[cfg(feature = "editor")]
 impl ElementConverter for Plugin {
     fn from_element(
         element: edit_xml::Element,
@@ -88,16 +91,19 @@ impl ElementConverter for Plugin {
         Ok(result)
     }
 }
+#[cfg(feature = "editor")]
 impl ChildOfListElement for Plugin {
     fn parent_element_name() -> &'static str {
         "plugins"
     }
 }
+#[cfg(feature = "editor")]
 impl ComparableElement for Plugin {
     fn is_same_item(&self, other: &Self) -> bool {
         self.is_same_plugin(other)
     }
 }
+#[cfg(feature = "editor")]
 impl UpdatableElement for Plugin {
     fn update_element(
         &self,

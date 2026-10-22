@@ -1,9 +1,11 @@
+// ABOUTME: Defines XML conversion and update traits for Maven models.
+// ABOUTME: Provides editor errors and conversions for structured XML values.
 //! This module contains the logic for editing XML files without using Serde this is done using the edit-xml crate.
 //!
 //! Why not use Serde?
 //! Using this will keep structure and comments in the XML file.
 //!  This is important for pom files as comments are used to describe the purpose of the element.
-use std::{fmt::Display, path::PathBuf};
+use std::path::PathBuf;
 
 use edit_xml::{Document, EditXMLError, Element};
 use thiserror::Error;
@@ -138,28 +140,7 @@ pub trait UpdatableElement: ElementConverter {
 pub trait ChildOfListElement: ElementConverter {
     fn parent_element_name() -> &'static str;
 }
-#[derive(Debug, Error)]
-pub enum InvalidValueError {
-    InvalidValue {
-        expected: &'static str,
-        found: String,
-    },
-    InvalidFormattedValue {
-        error: String,
-    },
-}
-impl Display for InvalidValueError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            InvalidValueError::InvalidValue { expected, found } => {
-                write!(f, "Expected {} found {}", expected, found)
-            }
-            InvalidValueError::InvalidFormattedValue { error } => {
-                write!(f, "Invalid Value: {}", error)
-            }
-        }
-    }
-}
+pub use crate::types::InvalidValueError;
 
 pub trait PomValue: Sized {
     fn from_string_for_editor(value: String) -> Result<Self, InvalidValueError> {

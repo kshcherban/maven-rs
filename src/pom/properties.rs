@@ -1,16 +1,23 @@
-use ahash::{HashMap, HashMapExt};
+// ABOUTME: Stores Maven POM properties by name.
+// ABOUTME: Provides optional XML conversion and update implementations.
+use ahash::HashMap;
+#[cfg(feature = "editor")]
+use ahash::HashMapExt;
 
+#[cfg(feature = "editor")]
 use crate::editor::{ElementConverter, HasElementName, UpdatableElement};
 //TODO: Do the values need to be something other than strings?
 //TODO: Ordering will be lost if we use a HashMap
 /// Represents the properties of a pom file.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct Properties(pub HashMap<String, String>);
+#[cfg(feature = "editor")]
 impl HasElementName for Properties {
     fn element_name() -> &'static str {
         "properties"
     }
 }
+#[cfg(feature = "editor")]
 impl ElementConverter for Properties {
     fn from_element(
         element: edit_xml::Element,
@@ -39,6 +46,7 @@ impl ElementConverter for Properties {
     }
 }
 
+#[cfg(feature = "editor")]
 impl UpdatableElement for Properties {
     /// Updating a Properties element means all of the original children are removed and replaced with the new children.
     fn update_element(

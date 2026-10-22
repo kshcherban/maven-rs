@@ -1,7 +1,10 @@
+// ABOUTME: Defines Maven source control metadata and connection parsing.
+// ABOUTME: Provides optional XML conversion and update implementations.
 use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
+#[cfg(feature = "editor")]
 use crate::editor::{
     ElementConverter, HasElementName, UpdatableElement,
     utils::{add_if_present, from_element_using_builder, sync_element},
@@ -71,6 +74,7 @@ impl Scm {
     }
 }
 
+#[cfg(feature = "editor")]
 impl UpdatableElement for Scm {
     fn update_element(
         &self,
@@ -95,11 +99,13 @@ impl UpdatableElement for Scm {
         Ok(())
     }
 }
+#[cfg(feature = "editor")]
 impl HasElementName for Scm {
     fn element_name() -> &'static str {
         "scm"
     }
 }
+#[cfg(feature = "editor")]
 impl ElementConverter for Scm {
     from_element_using_builder!(
         ScmBuilder,

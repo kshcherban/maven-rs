@@ -1,6 +1,9 @@
+// ABOUTME: Resolves dependency POMs and metadata over HTTP.
+// ABOUTME: Enables editor responses only when XML editing is enabled.
 use crate::meta::DeployMetadata;
 use crate::meta::SnapshotMetadata;
 use crate::pom::Pom;
+#[cfg(feature = "editor")]
 use crate::pom::editor::PomEditor;
 use crate::resolver::ResolvableRepository;
 use crate::utils::group_id_and_artifact_id_to_path;
@@ -12,6 +15,7 @@ use tracing::debug;
 use tracing::instrument;
 
 use super::Dependency;
+#[cfg(feature = "editor")]
 use crate::editor::XMLEditorError;
 #[derive(Debug, Error)]
 pub enum DependencyResolverError {
@@ -21,6 +25,7 @@ pub enum DependencyResolverError {
     InvalidURL(#[from] url::ParseError),
     #[error("Failed to parse metadata")]
     InvalidXMLForQuickXML(#[from] quick_xml::de::DeError),
+    #[cfg(feature = "editor")]
     #[error("Invalid XML file")]
     InvalidXMLForEditor(#[from] XMLEditorError),
 }
@@ -63,6 +68,7 @@ impl Dependency {
         }
         Ok(None)
     }
+    #[cfg(feature = "editor")]
     #[instrument]
     pub async fn resolve_pom_as_editor<R: ResolvableRepository>(
         &self,

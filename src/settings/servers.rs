@@ -1,6 +1,9 @@
+// ABOUTME: Defines Maven server authentication settings for Serde.
+// ABOUTME: Provides optional XML conversion and update implementations.
 use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
 
+#[cfg(feature = "editor")]
 use crate::editor::{
     ChildOfListElement, ElementConverter, HasElementName, UpdatableElement,
     utils::{add_if_present, create_basic_text_element, from_element_using_builder},
@@ -47,11 +50,13 @@ impl Server {
         }
     }
 }
+#[cfg(feature = "editor")]
 impl HasElementName for Server {
     fn element_name() -> &'static str {
         "server"
     }
 }
+#[cfg(feature = "editor")]
 impl ElementConverter for Server {
     from_element_using_builder!(
         ServerBuilder,
@@ -97,11 +102,13 @@ impl ElementConverter for Server {
     }
 }
 
+#[cfg(feature = "editor")]
 impl ChildOfListElement for Server {
     fn parent_element_name() -> &'static str {
         "servers"
     }
 }
+#[cfg(feature = "editor")]
 impl UpdatableElement for Server {
     /// Will rewrite the entire element with the current element. Because it might be a change from a password to a private key.
     fn update_element(

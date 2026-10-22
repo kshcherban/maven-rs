@@ -6,6 +6,18 @@
 
 the Maven Helper library for Rust that no one asked for
 
+## Features
+
+The default build supports Serde parsing without compiling an XML editor.
+
+- `editor`: enables `PomEditor`, XML conversion and update traits, and the optional
+  `edit-xml` dependency. Enable it with `features = ["editor"]` when editing POMs.
+- `resolver`: enables HTTP resolution of POMs and metadata. Combine it with `editor`
+  to use `resolve_pom_as_editor`.
+
+Cargo may still resolve the optional Git dependency when generating a lockfile.
+Disabling `editor` removes it from the active build dependency graph.
+
 ## Examples
 
 ### Reading a pom file with serde
@@ -17,6 +29,8 @@ println!("{:#?}", x);
 ```
 
 ### Generating a pom file with the editor
+
+Requires the `editor` feature.
 ```rust
         let mut editor = PomEditor::default();
         editor.set_group_id("dev.wyatt-herkamp");

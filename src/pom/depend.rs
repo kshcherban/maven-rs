@@ -1,19 +1,20 @@
+// ABOUTME: Defines Maven dependencies and coordinate parsing.
+// ABOUTME: Provides optional XML editing and HTTP resolution support.
 use std::str::FromStr;
 #[cfg(feature = "resolver")]
 pub mod resolve;
-use crate::{
-    editor::{
-        ChildOfListElement, ComparableElement, ElementConverter, HasElementName, UpdatableElement,
-        XMLEditorError,
-        utils::{
-            add_if_present, create_basic_text_element, find_or_create_then_set_text_content,
-            sync_element, typed_from_element_using_builder,
-        },
+#[cfg(feature = "editor")]
+use crate::editor::{
+    ChildOfListElement, ComparableElement, ElementConverter, HasElementName, UpdatableElement,
+    XMLEditorError,
+    utils::{
+        add_if_present, create_basic_text_element, find_or_create_then_set_text_content,
+        sync_element, typed_from_element_using_builder,
     },
-    types::Property,
-    utils::group_id_and_artifact_id_and_version_to_path,
 };
+use crate::{types::Property, utils::group_id_and_artifact_id_and_version_to_path};
 use derive_builder::Builder;
+#[cfg(feature = "editor")]
 use edit_xml::{Document, Element};
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
@@ -91,16 +92,19 @@ impl Dependency {
         format!("{}/{}", path, self.pom_name())
     }
 }
+#[cfg(feature = "editor")]
 impl ChildOfListElement for Dependency {
     fn parent_element_name() -> &'static str {
         "dependencies"
     }
 }
+#[cfg(feature = "editor")]
 impl ComparableElement for Dependency {
     fn is_same_item(&self, other: &Self) -> bool {
         self.is_same_dependency(other)
     }
 }
+#[cfg(feature = "editor")]
 impl UpdatableElement for Dependency {
     fn update_element(
         &self,
@@ -177,11 +181,13 @@ impl std::fmt::Display for Dependency {
         write!(f, "{}:{}:{}", self.group_id, self.artifact_id, version)
     }
 }
+#[cfg(feature = "editor")]
 impl HasElementName for Dependency {
     fn element_name() -> &'static str {
         "dependency"
     }
 }
+#[cfg(feature = "editor")]
 impl ElementConverter for Dependency {
     typed_from_element_using_builder!(
         DependencyBuilder,
@@ -222,10 +228,9 @@ mod tests {
 
     use pretty_assertions::assert_eq;
 
-    use crate::{
-        editor::utils::test_utils,
-        utils::bug_testing::{self, BugFile},
-    };
+    #[cfg(feature = "editor")]
+    use crate::editor::utils::test_utils;
+    use crate::utils::bug_testing::{self, BugFile};
 
     pub use super::*;
     #[test]
@@ -272,11 +277,14 @@ mod tests {
         );
     }
     fn test_parse_methods(value: &str, expected: Dependency) -> anyhow::Result<()> {
+        #[cfg(feature = "editor")]
         let dep_via_edit_xml = test_utils::create_xml_to_element::<Dependency>(value)?;
         let dep_via_serde: Dependency = quick_xml::de::from_str(value)?;
 
+        #[cfg(feature = "editor")]
         assert_eq!(dep_via_edit_xml, expected);
         assert_eq!(dep_via_serde, expected);
+        #[cfg(feature = "editor")]
         println!("{:#?}", dep_via_edit_xml);
 
         let dep_serialize_serde = quick_xml::se::to_string(&expected)?;
@@ -388,6 +396,7 @@ mod tests {
             "com/google/guava/guava/30.1-jre/guava-30.1-jre.pom"
         );
     }
+    #[cfg(feature = "editor")]
     #[test]
     fn update_element_test() -> anyhow::Result<()> {
         let actual_xml = r#"<?xml version="1.0" encoding="UTF-8"?>

@@ -1,7 +1,11 @@
+// ABOUTME: Defines Maven developer metadata and identity comparisons.
+// ABOUTME: Provides optional XML conversion and update implementations.
 use derive_builder::Builder;
+#[cfg(feature = "editor")]
 use edit_xml::{Document, Element};
 use serde::{Deserialize, Serialize};
 
+#[cfg(feature = "editor")]
 use crate::editor::{
     ChildOfListElement, ComparableElement, ElementConverter, HasElementName, UpdatableElement,
     XMLEditorError,
@@ -40,11 +44,13 @@ impl Developer {
     }
 }
 
+#[cfg(feature = "editor")]
 impl HasElementName for Developer {
     fn element_name() -> &'static str {
         "developer"
     }
 }
+#[cfg(feature = "editor")]
 impl ElementConverter for Developer {
     from_element_using_builder!(
         DeveloperBuilder,
@@ -83,16 +89,19 @@ impl ElementConverter for Developer {
         Ok(children)
     }
 }
+#[cfg(feature = "editor")]
 impl ChildOfListElement for Developer {
     fn parent_element_name() -> &'static str {
         "developers"
     }
 }
+#[cfg(feature = "editor")]
 impl ComparableElement for Developer {
     fn is_same_item(&self, other: &Self) -> bool {
         self.is_same_developer(other)
     }
 }
+#[cfg(feature = "editor")]
 impl UpdatableElement for Developer {
     fn update_element(
         &self,
@@ -117,16 +126,20 @@ impl UpdatableElement for Developer {
 }
 #[cfg(test)]
 mod tests {
+    #[cfg(feature = "editor")]
     use crate::editor::utils::test_utils;
 
     use super::Developer;
 
     fn test_parse_methods(value: &str, expected: Developer) -> anyhow::Result<()> {
+        #[cfg(feature = "editor")]
         let dev_via_edit_xml = test_utils::create_xml_to_element::<Developer>(value)?;
         let dev_via_serde: Developer = quick_xml::de::from_str(value)?;
 
+        #[cfg(feature = "editor")]
         assert_eq!(dev_via_edit_xml, expected);
         assert_eq!(dev_via_serde, expected);
+        #[cfg(feature = "editor")]
         println!("{:#?}", dev_via_edit_xml);
 
         let dep_serialize_serde = quick_xml::se::to_string(&expected)?;

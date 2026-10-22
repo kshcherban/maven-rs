@@ -1,6 +1,9 @@
+// ABOUTME: Defines parent POM coordinates and relative paths.
+// ABOUTME: Provides optional XML conversion and update implementations.
 use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
 
+#[cfg(feature = "editor")]
 use crate::editor::{
     ElementConverter, HasElementName, UpdatableElement,
     utils::{add_if_present, from_element_using_builder, sync_element},
@@ -18,11 +21,13 @@ pub struct Parent {
     #[builder(setter(into, strip_option), default)]
     pub relative_path: Option<String>,
 }
+#[cfg(feature = "editor")]
 impl HasElementName for Parent {
     fn element_name() -> &'static str {
         "parent"
     }
 }
+#[cfg(feature = "editor")]
 impl ElementConverter for Parent {
     from_element_using_builder!(
         ParentBuilder,
@@ -53,6 +58,7 @@ impl ElementConverter for Parent {
     }
 }
 
+#[cfg(feature = "editor")]
 impl UpdatableElement for Parent {
     fn update_element(
         &self,
@@ -69,7 +75,7 @@ impl UpdatableElement for Parent {
         Ok(())
     }
 }
-#[cfg(test)]
+#[cfg(all(test, feature = "editor"))]
 mod tests {
     use pretty_assertions::assert_eq;
 

@@ -1,9 +1,12 @@
+// ABOUTME: Defines Serde POM models and inherited project coordinates.
+// ABOUTME: Exposes POM editing only when the editor feature is enabled.
 //! The structure and functions to work with a pom file.
 use serde::{Deserialize, Serialize};
 mod build;
 mod depend;
 mod developers;
 mod distribution_management;
+#[cfg(feature = "editor")]
 pub mod editor;
 mod parent;
 mod properties;
